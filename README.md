@@ -27,3 +27,7 @@ docker-compose up -d
 ##### prom: http://prom.example.com:9090/ 
 ##### node exporter: http://prom.example.com:9100/metrics 
 
+#### any change on prometheus.yml file could reload by:
+```
+curl -i -XPOST localhost:9090/-/reload
+```
