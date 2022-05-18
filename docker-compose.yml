@@ -1,0 +1,65 @@
+version: '3.1'
+services:
+  node:
+    image: docker/prom/node-exporter:latest
+    restart: always
+    ports:
+      - 9100:9100
+    networks:
+      - promnet
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/prometheus:/prometheus:ro"
+
+  prometheus:
+    image: docker/prom/prometheus:latest
+    restart: always
+    volumes:
+      - "/prometheus/config:/prometheus"
+      - "/prometheus/data/prometheus:/data"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    command:
+      - '--config.file=/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/data'
+      - '--web.enable-lifecycle'
+    ports:
+      - 9090:9090
+    depends_on:
+      - alertmanager
+    networks:
+      - promnet
+
+  alertmanager:
+    image: docker/prom/alertmanager:latest
+    restart: always
+    volumes:
+      - "/prometheus/config:/prometheus"
+      - "/prometheus/data/alertmanager:/data"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    command:
+      - '--config.file=/prometheus/alertmanager.yml'
+      - '--storage.path=/data'
+    ports:
+      - 9093:9093
+    networks:
+      - promnet
+
+  cadvisor:
+    image: docker/google/cadvisor
+    restart: always
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:rw"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - promnet
+
+networks:
+  promnet:
+    driver: bridge
