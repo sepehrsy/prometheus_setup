@@ -8,7 +8,7 @@ chown -R  nobody: /prometheus
 ```
 #### after that we must prepare  config files of (prometheus.rules.yml - prometheus.yml - alertmanager.yml) in /prometheus/config directory
 ```
-cp prometheus.rules.yml prometheus.yml alertmanager.yml /prometheus/config/prometheus.yml
+cp prometheus.rules.yml prometheus.yml alertmanager.yml /prometheus/config/
 ```
 #### if you use nginx web serever
 ```
